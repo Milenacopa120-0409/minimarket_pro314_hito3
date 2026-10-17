@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: minimarket_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_local_cambiar}
+      MYSQL_DATABASE: db_minimarket_pro413
+      MYSQL_USER: ${MYSQL_USER:-minimarket}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-minimarket_local}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_datos:/var/lib/mysql
+      - ./sql/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+volumes:
+  mysql_datos:
